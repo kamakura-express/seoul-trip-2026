@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首爾行 記帳本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+HK:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eaf6fb;
+    --card:#ffffff;
+    --ink:#1b2c4d;
+    --pink:#ff5c86;
+    --pink-l:#ffe1ea;
+    --teal:#0fa896;
+    --teal-l:#d7f4ef;
+    --gold:#ffab2e;
+    --gold-l:#fff0d6;
+    --line: rgba(27,44,77,0.12);
+    --muted:#77839a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 24px 16px 60px;
+    min-height:100vh;
+  }
+  .wrap{ max-width: 720px; margin: 0 auto; }
+
+  .pass{
+    background: var(--card);
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 26px rgba(27,44,77,0.12);
+    margin-bottom: 20px;
+    border: 1px solid var(--line);
+  }
+  .pass-top{
+    display:flex; justify-content: space-between; align-items:flex-start;
+    padding: 22px 26px 18px;
+    border-bottom: 2px dashed var(--pink-l);
+    position: relative;
+  }
+  .pass-top::before, .pass-top::after{
+    content:''; position:absolute; bottom:-9px; width:18px; height:18px;
+    background: var(--bg); border-radius:50%; border: 1px solid var(--line);
+  }
+  .pass-top::before{ left:-9px; }
+  .pass-top::after{ right:-9px; }
+  .route{ font-family:'Noto Serif HK', serif; font-weight:700; font-size: 26px; letter-spacing: 0.5px; margin:0; }
+  .route span{ color: var(--pink); }
+  .subroute{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); margin-top:4px; letter-spacing:1px; text-transform:uppercase;}
+  .dates{ text-align:right; font-family:'IBM Plex Mono',monospace; }
+  .dates .d{ font-size:20px; font-weight:600; color: var(--teal); }
+  .dates .lbl{ font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  .pass-bottom{ display:flex; padding: 16px 26px 20px; gap: 28px; flex-wrap: wrap; }
+  .stat{ min-width: 100px; }
+  .stat .lbl{ font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  .stat .val{ font-family:'IBM Plex Mono',monospace; font-size:18px; font-weight:600; margin-top:2px; }
+  .stat .val.pink{ color: var(--pink); }
+
+  .tabs{ display:flex; gap:8px; margin-bottom:16px; }
+  .tab{
+    flex:1; text-align:center; padding: 10px 6px; border-radius: 10px;
+    background: var(--card); color: var(--muted); border: 1px solid var(--line);
+    font-size:13px; letter-spacing:0.3px; cursor:pointer; transition: all 0.15s;
+  }
+  .tab.active{ background: var(--pink); color: #fff; font-weight:600; border-color: var(--pink); }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  .day-row{ display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:16px; -webkit-overflow-scrolling:touch; }
+  .day-chip{
+    flex: 0 0 auto; padding: 8px 14px; border-radius: 10px; background: var(--card);
+    border: 1px solid var(--line); font-family:'IBM Plex Mono',monospace; font-size:13px;
+    font-weight:500; cursor:pointer; color: var(--ink); white-space:nowrap;
+  }
+  .day-chip.active{ background: var(--teal); color:#fff; border-color: var(--teal); }
+
+  .card{ background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; }
+  .card h3{ font-family:'Noto Serif HK',serif; font-size:15px; margin:0 0 14px; padding-bottom:8px; border-bottom: 1px solid var(--line); color: var(--ink); }
+
+  label{ display:block; font-size:11px; color:var(--muted); letter-spacing:0.3px; margin-bottom:4px; margin-top:10px; }
+  label:first-child{ margin-top:0; }
+  input, select{
+    width:100%; padding: 9px 10px; border-radius:8px; border:1px solid var(--line);
+    background: #fbfdfe; font-family:'Inter',sans-serif; font-size:14px; color: var(--ink);
+  }
+  input:focus, select:focus{ outline:2px solid var(--gold); outline-offset:1px; }
+  .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  .row3{ display:grid; grid-template-columns: 2fr 1fr 1fr; gap:12px; }
+
+  button{ font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; border:none; border-radius:8px; padding:10px 16px; }
+  .btn-main{ background: var(--pink); color:#fff; margin-top:16px; width:100%; }
+  .btn-main:active{ transform: scale(0.98); }
+  .btn-main.teal{ background: var(--teal); }
+  .btn-ghost{ background: #fbfdfe; color: var(--muted); border:1px solid var(--line); padding:5px 10px; font-size:12px; }
+
+  .chip-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+  .chip{
+    background:#fbfdfe; border:1px solid var(--line); border-radius:20px; padding:6px 12px;
+    font-size:12px; cursor:pointer; color: var(--ink);
+  }
+  .chip:hover{ border-color: var(--gold); }
+  .chip.hotel{ border-color: var(--teal); color: var(--teal); background: var(--teal-l); }
+
+  .hotel-fields{
+    margin-top: 12px; padding: 12px; background: var(--teal-l); border-radius:10px; border: 1px dashed var(--teal);
+    display:none;
+  }
+  .hotel-fields.show{ display:block; }
+  .checkline{ display:flex; align-items:center; gap:8px; margin-top:10px; }
+  .checkline input{ width:auto; margin:0; }
+  .checkline label{ margin:0; font-size:13px; color:var(--ink); }
+
+  .exp-item{ padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .exp-item:last-child{ border-bottom:none; }
+  .exp-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .exp-left .name{ font-size:14px; font-weight:600; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .exp-left .meta{ font-size:11px; color:var(--muted); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  .exp-right{ text-align:right; display:flex; align-items:center; gap:10px; }
+  .exp-amt .orig{ font-size:13px; font-weight:600; font-family:'IBM Plex Mono',monospace; }
+  .exp-amt .hkd{ font-size:11px; color: var(--teal); font-family:'IBM Plex Mono',monospace; }
+  .del{ background:none; border:none; color:var(--pink); font-size:16px; padding:2px 4px; }
+  .badge{ font-size:10px; padding:2px 7px; border-radius:10px; background: var(--teal-l); color: var(--teal); letter-spacing:0.3px; font-weight:600; }
+  .badge.day{ background: var(--gold-l); color:#a35b00; }
+  .badge.warn{ background: var(--pink-l); color: var(--pink); }
+  .split-detail{
+    margin-top:8px; padding-top:8px; border-top: 1px dotted var(--line);
+    display:flex; flex-wrap:wrap; gap: 6px 16px; font-family:'IBM Plex Mono',monospace; font-size:11px; color: var(--muted);
+  }
+  .split-detail b{ color: var(--ink); font-weight:600; }
+  .hotel-note{ margin-top:8px; font-size:11px; color: var(--teal); font-family:'IBM Plex Mono',monospace; }
+
+  .empty{ text-align:center; color: var(--muted); font-size:13px; padding: 20px 0; }
+
+  .rate-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); }
+  .rate-row:last-child{ border-bottom:none; }
+  .rate-cur{ width:50px; font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14px; }
+  .rate-eq{ color:var(--muted); font-size:12px; }
+  .rate-row input{ flex:1; }
+
+  .settle-line{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px dashed var(--line); font-size:13px; }
+  .settle-line:last-child{ border-bottom:none; }
+  .settle-line .who{ font-weight:600; }
+  .settle-line .amt{ font-family:'IBM Plex Mono',monospace; }
+  .owe{ color: var(--pink); }
+  .owed{ color: var(--teal); }
+
+  .foot-note{ text-align:center; font-size:11px; color: rgba(27,44,77,0.35); margin-top:20px; letter-spacing:0.3px; }
+  .save-status{ text-align:center; font-size:11px; color: rgba(27,44,77,0.4); margin-top:8px; min-height:14px; }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="pass">
+    <div class="pass-top">
+      <div>
+        <p class="route">HKG <span>→</span> ICN</p>
+        <div class="subroute">首爾行 記帳本</div>
+      </div>
+      <div class="dates">
+        <div class="d">09.10—09.17</div>
+        <div class="lbl">2026 Seoul Trip</div>
+      </div>
+    </div>
+    <div class="pass-bottom">
+      <div class="stat"><div class="lbl">總支出 (HKD)</div><div class="val pink" id="totalHkd">$0</div></div>
+      <div class="stat"><div class="lbl">記帳筆數</div><div class="val" id="totalCount">0</div></div>
+      <div class="stat"><div class="lbl">同行人數</div><div class="val" id="totalPeople">0</div></div>
+      <div class="stat"><div class="lbl">未分日子</div><div class="val" id="totalPre">0</div></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="expenses">記帳</div>
+    <div class="tab" data-tab="pretrip">出發前 / 未定</div>
+    <div class="tab" data-tab="rates">匯率</div>
+    <div class="tab" data-tab="settle">結算</div>
+  </div>
+
+  <div class="panel active" id="panel-expenses">
+    <div class="day-row" id="day-filter"></div>
+
+    <div class="card">
+      <h3>新增一筆</h3>
+      <label>日期</label>
+      <select id="f-date"></select>
+
+      <label>常用項目（撳一下自動填名）</label>
+      <div class="chip-row" id="quick-items"></div>
+
+      <label>項目名稱</label>
+      <input id="f-name" placeholder="例如：明洞晚餐、地鐵票">
+
+      <div class="row3">
+        <div>
+          <label>金額</label>
+          <input id="f-amount" type="number" step="0.01" placeholder="0.00">
+        </div>
+        <div>
+          <label>幣別</label>
+          <select id="f-currency">
+            <option value="HKD">HKD 港幣</option>
+            <option value="KRW">KRW 韓圜</option>
+            <option value="RMB">RMB 人民幣</option>
+          </select>
+        </div>
+        <div>
+          <label>付款人</label>
+          <select id="f-payer"></select>
+        </div>
+      </div>
+
+      <label>平台 / 商戶（訂酒店機票可入返，其他消費可留空）</label>
+      <input id="f-platform" placeholder="例如：Agoda、Klook、Trip.com、現場">
+
+      <div class="checkline">
+        <input type="checkbox" id="f-is-hotel">
+        <label for="f-is-hotel">呢筆係酒店訂單</label>
+      </div>
+      <div class="hotel-fields" id="hotel-fields">
+        <div class="row2">
+          <div>
+            <label>免費取消死線</label>
+            <input type="date" id="f-cancel-date">
+          </div>
+          <div>
+            <label>過數狀態</label>
+            <select id="f-paid-status">
+              <option value="unpaid">未過數</option>
+              <option value="paid">已過數</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <label>分帳對象（未選 = 全部平分）</label>
+      <div id="f-split" class="chip-row"></div>
+      <button class="btn-main" id="add-expense">加入記帳</button>
+    </div>
+
+    <div class="card">
+      <h3 style="display:flex; justify-content:space-between; align-items:center;">
+        <span>同行人</span>
+        <span style="font-weight:400; font-size:11px; color:var(--muted);">用逗號分隔新增</span>
+      </h3>
+      <div class="row2">
+        <input id="f-people" placeholder="例如：小明, 阿雪">
+        <button class="btn-ghost" id="add-people" style="width:100%;">新增</button>
+      </div>
+      <div id="people-list" class="chip-row" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="card">
+      <h3 id="expense-list-title">記帳明細</h3>
+      <div id="expense-list"><div class="empty">未有記錄，先在上面加一筆</div></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-pretrip">
+    <div class="card">
+      <h3>新增一筆（出發前 / 未定日子）</h3>
+      <p style="font-size:11px; color:var(--muted); margin:0 0 10px;">呢度用嚟記錄未歸類到某一日嘅使費 —— 例如機票、酒店訂金、簽證、保險、上網卡。</p>
+
+      <label>常用項目（撳一下自動填名）</label>
+      <div class="chip-row" id="quick-items-p"></div>
+
+      <label>項目名稱</label>
+      <input id="p-name" placeholder="例如：來回機票、酒店訂金">
+
+      <div class="row3">
+        <div>
+          <label>金額</label>
+          <input id="p-amount" type="number" step="0.01" placeholder="0.00">
+        </div>
+        <div>
+          <label>幣別</label>
+          <select id="p-currency">
+            <option value="HKD">HKD 港幣</option>
+            <option value="KRW">KRW 韓圜</option>
+            <option value="RMB">RMB 人民幣</option>
+          </select>
+        </div>
+        <div>
+          <label>付款人</label>
+          <select id="p-payer"></select>
+        </div>
+      </div>
+
+      <label>平台 / 商戶</label>
+      <input id="p-platform" placeholder="例如：Agoda、Klook、航空公司官網">
+
+      <div class="checkline">
+        <input type="checkbox" id="p-is-hotel">
+        <label for="p-is-hotel">呢筆係酒店訂單</label>
+      </div>
+      <div class="hotel-fields" id="hotel-fields-p">
+        <div class="row2">
+          <div>
+            <label>免費取消死線</label>
+            <input type="date" id="p-cancel-date">
+          </div>
+          <div>
+            <label>過數狀態</label>
+            <select id="p-paid-status">
+              <option value="unpaid">未過數</option>
+              <option value="paid">已過數</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <label>分帳對象（未選 = 全部平分）</label>
+      <div id="p-split" class="chip-row"></div>
+      <button class="btn-main teal" id="add-expense-p">加入記帳</button>
+    </div>
+
+    <div class="card">
+      <h3>出發前 / 未定日子 明細</h3>
+      <div id="pretrip-list"><div class="empty">未有記錄</div></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-rates">
+    <div class="card">
+      <h3>匯率設定（兌 1 HKD）</h3>
+      <div id="rate-list"></div>
+      <p style="font-size:11px; color:var(--muted); margin-top:12px; margin-bottom:0;">
+        入返出發前實際兌換到嘅匯率，方便換算。呢度嘅數字係手動設定，唔會自動更新。
+      </p>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-settle">
+    <div class="card">
+      <h3>每人已付（HKD 等值，全程總計）</h3>
+      <div id="paid-list"><div class="empty">未有同行人或記錄</div></div>
+    </div>
+    <div class="card">
+      <h3>應收 / 應找數</h3>
+      <div id="settle-list"><div class="empty">未有記錄</div></div>
+    </div>
+  </div>
+
+  <div class="save-status" id="saveStatus">&nbsp;</div>
+  <div class="foot-note">資料同步緊你自己嘅 Firebase（seoul-trip-2026），唔經 Claude；改動幾乎即時傳晒俾用緊同一個檔案嘅人</div>
+</div>
+
+<script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCmKnhWYAo_rIShtwDN9FwFCfwA5smxJrU",
+  authDomain: "seoul-trip-2026-b2705.firebaseapp.com",
+  databaseURL: "https://seoul-trip-2026-b2705-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "seoul-trip-2026-b2705",
+  storageBucket: "seoul-trip-2026-b2705.firebasestorage.app",
+  messagingSenderId: "996371093332",
+  appId: "1:996371093332:web:0434e070ac8e0bf31c5ac1"
+};
+const DATA_PATH = 'seoul_trip_data';
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.database();
+const dataRef = db.ref(DATA_PATH);
+
+const TRIP_DAYS = ['09/10','09/11','09/12','09/13','09/14','09/15','09/16','09/17'];
+const PRE = 'PRE';
+
+let state = {
+  people: ['我'],
+  expenses: [],
+  rates: { KRW: 0.055, HKD: 1, RMB: 1.08 }
+};
+
+let selectedDay = 'all';
+let suppressNextRemoteApply = false; // avoids re-rendering off our own just-sent write
+
+const QUICK_ITEMS = [
+  { name:'酒店訂金', hotel:true },
+  { name:'地鐵 / 交通' },
+  { name:'餐廳' },
+  { name:'景點門票' },
+  { name:'購物 / 手信' },
+  { name:'兌換現金' }
+];
+const QUICK_ITEMS_PRE = [
+  { name:'來回機票' },
+  { name:'酒店訂金', hotel:true },
+  { name:'旅遊保險' },
+  { name:'上網卡 / Wifi蛋' },
+  { name:'簽證 / ETA' }
+];
+
+function loadState(){
+  const statusEl = document.getElementById('saveStatus');
+  statusEl.textContent = '連接緊 Firebase…';
+  // Realtime listener: fires once immediately with current data, then again on any change
+  // made by anyone (including other devices), keeping everyone in sync automatically.
+  dataRef.on('value', (snapshot) => {
+    if(suppressNextRemoteApply){ suppressNextRemoteApply = false; return; }
+    const val = snapshot.val();
+    if(val){
+      state = Object.assign({ people:['我'], expenses:[], rates:{KRW:0.055,HKD:1,RMB:1.08} }, val);
+    }
+    renderAll();
+    statusEl.textContent = '已連接';
+    setTimeout(()=>{ statusEl.textContent = '\u00A0'; }, 1500);
+  }, (err) => {
+    statusEl.textContent = '連接失敗：' + (err && err.message ? err.message : '請檢查網絡');
+  });
+}
+
+let saveTimer = null;
+function saveState(){
+  const statusEl = document.getElementById('saveStatus');
+  statusEl.textContent = '同步緊…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    suppressNextRemoteApply = true;
+    dataRef.set(state)
+      .then(() => {
+        statusEl.textContent = '已同步';
+        setTimeout(()=>{ statusEl.textContent = '\u00A0'; }, 1500);
+      })
+      .catch(() => {
+        suppressNextRemoteApply = false;
+        statusEl.textContent = '同步失敗，請再試';
+      });
+  }, 300);
+}
+
+function toHKD(amount, currency){ return amount * (state.rates[currency] || 0); }
+function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+function fmt2(n){ return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ---------- Tabs ----------
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ---------- Day filter / date select ----------
+function renderDayFilter(){
+  const el = document.getElementById('day-filter');
+  el.innerHTML = '';
+  const allChip = document.createElement('div');
+  allChip.className = 'day-chip' + (selectedDay === 'all' ? ' active' : '');
+  allChip.textContent = '全部';
+  allChip.addEventListener('click', () => { selectedDay = 'all'; renderAll(); });
+  el.appendChild(allChip);
+  TRIP_DAYS.forEach(d => {
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (selectedDay === d ? ' active' : '');
+    chip.textContent = d;
+    chip.addEventListener('click', () => { selectedDay = d; renderAll(); });
+    el.appendChild(chip);
+  });
+}
+
+function renderDateSelect(){
+  const fSel = document.getElementById('f-date');
+  const prev = fSel.value;
+  fSel.innerHTML = '';
+  TRIP_DAYS.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d; opt.textContent = d;
+    fSel.appendChild(opt);
+  });
+  fSel.value = TRIP_DAYS.includes(prev) ? prev : (selectedDay !== 'all' ? selectedDay : TRIP_DAYS[0]);
+}
+
+// ---------- Quick items ----------
+function renderQuickItems(){
+  const el = document.getElementById('quick-items');
+  el.innerHTML = '';
+  QUICK_ITEMS.forEach(qi => {
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (qi.hotel ? ' hotel' : '');
+    chip.textContent = qi.name;
+    chip.addEventListener('click', () => {
+      document.getElementById('f-name').value = qi.name;
+      document.getElementById('f-is-hotel').checked = !!qi.hotel;
+      toggleHotelFields('f-is-hotel','hotel-fields');
+    });
+    el.appendChild(chip);
+  });
+
+  const elP = document.getElementById('quick-items-p');
+  elP.innerHTML = '';
+  QUICK_ITEMS_PRE.forEach(qi => {
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (qi.hotel ? ' hotel' : '');
+    chip.textContent = qi.name;
+    chip.addEventListener('click', () => {
+      document.getElementById('p-name').value = qi.name;
+      document.getElementById('p-is-hotel').checked = !!qi.hotel;
+      toggleHotelFields('p-is-hotel','hotel-fields-p');
+    });
+    elP.appendChild(chip);
+  });
+}
+
+function toggleHotelFields(checkboxId, fieldsId){
+  document.getElementById(fieldsId).classList.toggle('show', document.getElementById(checkboxId).checked);
+}
+document.getElementById('f-is-hotel').addEventListener('change', () => toggleHotelFields('f-is-hotel','hotel-fields'));
+document.getElementById('p-is-hotel').addEventListener('change', () => toggleHotelFields('p-is-hotel','hotel-fields-p'));
+
+// ---------- People ----------
+function renderPeopleList(){
+  const el = document.getElementById('people-list');
+  el.innerHTML = '';
+  state.people.forEach((p, idx) => {
+    const chip = document.createElement('div');
+    chip.style.cssText = 'display:flex; align-items:center; gap:6px; background:var(--pink-l); border-radius:20px; padding:5px 10px; font-size:12px;';
+    chip.innerHTML = '<span>' + escapeHtml(p) + '</span>';
+    const rm = document.createElement('button');
+    rm.textContent = '\u00D7';
+    rm.style.cssText = 'background:none; border:none; color:var(--pink); font-size:13px; padding:0; line-height:1; cursor:pointer;';
+    rm.setAttribute('aria-label', '移除 ' + p);
+    rm.addEventListener('click', () => {
+      if(state.people.length <= 1){ return; }
+      state.people.splice(idx,1);
+      saveState();
+      renderAll();
+    });
+    chip.appendChild(rm);
+    el.appendChild(chip);
+  });
+  renderPayerOptions();
+  renderSplitCheckboxes();
+}
+
+function renderPayerOptions(){
+  ['f-payer','p-payer'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '';
+    state.people.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p; opt.textContent = p;
+      sel.appendChild(opt);
+    });
+  });
+}
+
+function renderSplitCheckboxes(){
+  ['f-split','p-split'].forEach(id => {
+    const wrap = document.getElementById(id);
+    wrap.innerHTML = '';
+    state.people.forEach(p => {
+      const lbl = document.createElement('label');
+      lbl.style.cssText = 'display:flex; align-items:center; gap:5px; background:#fbfdfe; border:1px solid var(--line); border-radius:20px; padding:5px 11px; font-size:12px; margin:0; cursor:pointer;';
+      lbl.innerHTML = '<input type="checkbox" value="' + escapeHtml(p) + '" style="width:auto; margin:0;"> ' + escapeHtml(p);
+      wrap.appendChild(lbl);
+    });
+  });
+}
+
+document.getElementById('add-people').addEventListener('click', () => {
+  const raw = document.getElementById('f-people').value.trim();
+  if(!raw) return;
+  const names = raw.split(/[,，、]/).map(s=>s.trim()).filter(Boolean);
+  names.forEach(n => { if(!state.people.includes(n)) state.people.push(n); });
+  document.getElementById('f-people').value = '';
+  saveState();
+  renderAll();
+});
+
+// ---------- Rates ----------
+function renderRates(){
+  const el = document.getElementById('rate-list');
+  el.innerHTML = '';
+  Object.keys(state.rates).forEach(cur => {
+    if(cur === 'HKD') return;
+    const row = document.createElement('div');
+    row.className = 'rate-row';
+    row.innerHTML =
+      '<div class="rate-cur">' + cur + '</div>' +
+      '<div class="rate-eq">1 ' + cur + ' =</div>' +
+      '<input type="number" step="0.0001" value="' + state.rates[cur] + '" data-cur="' + cur + '">' +
+      '<div class="rate-eq">HKD</div>';
+    el.appendChild(row);
+  });
+  el.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('change', () => {
+      const v = parseFloat(inp.value);
+      if(!isNaN(v) && v >= 0){
+        state.rates[inp.dataset.cur] = v;
+        saveState();
+        renderAll();
+      }
+    });
+  });
+}
+
+// ---------- Add expense (shared logic) ----------
+function addExpenseFromForm(prefix, dateValue){
+  const name = document.getElementById(prefix + '-name').value.trim();
+  const amount = parseFloat(document.getElementById(prefix + '-amount').value);
+  const currency = document.getElementById(prefix + '-currency').value;
+  const payer = document.getElementById(prefix + '-payer').value;
+  const platform = document.getElementById(prefix + '-platform').value.trim();
+  const isHotel = document.getElementById(prefix + '-is-hotel').checked;
+  const cancelDate = document.getElementById(prefix + '-cancel-date').value;
+  const paidStatus = document.getElementById(prefix + '-paid-status').value;
+  const errEl = ensureErrorEl(prefix);
+
+  if(!name){ showError(errEl, '請輸入項目名稱'); return false; }
+  if(isNaN(amount) || amount <= 0){ showError(errEl, '請輸入有效金額'); return false; }
+  if(!payer){ showError(errEl, '請先新增同行人'); return false; }
+  clearError(errEl);
+
+  const splitChecked = Array.from(document.querySelectorAll('#' + prefix + '-split input:checked')).map(i=>i.value);
+  const splitAmong = splitChecked.length > 0 ? splitChecked : [...state.people];
+
+  state.expenses.unshift({
+    id: Date.now(),
+    date: dateValue, name, amount, currency, payer, splitAmong, platform,
+    isHotel, cancelDate: isHotel ? cancelDate : '', paidStatus: isHotel ? paidStatus : ''
+  });
+
+  document.getElementById(prefix + '-name').value = '';
+  document.getElementById(prefix + '-amount').value = '';
+  document.getElementById(prefix + '-platform').value = '';
+  document.getElementById(prefix + '-is-hotel').checked = false;
+  document.getElementById(prefix + '-cancel-date').value = '';
+  document.getElementById(prefix + '-paid-status').value = 'unpaid';
+  toggleHotelFields(prefix + '-is-hotel', prefix === 'f' ? 'hotel-fields' : 'hotel-fields-p');
+  document.querySelectorAll('#' + prefix + '-split input').forEach(i=>i.checked=false);
+
+  saveState();
+  renderAll();
+  return true;
+}
+
+function ensureErrorEl(prefix){
+  let el = document.getElementById(prefix + '-error');
+  if(!el){
+    el = document.createElement('div');
+    el.id = prefix + '-error';
+    el.style.cssText = 'color: var(--pink); font-size:12px; margin-top:8px;';
+    document.getElementById('add-expense' + (prefix === 'p' ? '-p' : '')).insertAdjacentElement('beforebegin', el);
+  }
+  return el;
+}
+function showError(el, msg){ el.textContent = msg; }
+function clearError(el){ el.textContent = ''; }
+
+document.getElementById('add-expense').addEventListener('click', () => {
+  addExpenseFromForm('f', document.getElementById('f-date').value);
+});
+document.getElementById('add-expense-p').addEventListener('click', () => {
+  addExpenseFromForm('p', PRE);
+});
+
+// ---------- Expense list rendering (shared) ----------
+function renderExpenseItems(containerEl, list, showDayBadge){
+  if(list.length === 0){
+    containerEl.innerHTML = '<div class="empty">未有記錄</div>';
+    return;
+  }
+  containerEl.innerHTML = '';
+  list.forEach(exp => {
+    const hkd = toHKD(exp.amount, exp.currency);
+    const share = hkd / exp.splitAmong.length;
+    const shareOrig = exp.amount / exp.splitAmong.length;
+
+    const item = document.createElement('div');
+    item.className = 'exp-item';
+
+    let badges = '';
+    if(showDayBadge && exp.date && exp.date !== PRE){ badges += '<span class="badge day">' + escapeHtml(exp.date) + '</span>'; }
+    if(exp.platform){ badges += '<span class="badge">' + escapeHtml(exp.platform) + '</span>'; }
+    if(exp.isHotel){
+      badges += exp.paidStatus === 'paid' ? '<span class="badge">已過數</span>' : '<span class="badge warn">未過數</span>';
+    }
+
+    let hotelNote = '';
+    if(exp.isHotel && exp.cancelDate){
+      hotelNote = '<div class="hotel-note">免費取消死線：' + escapeHtml(exp.cancelDate) + '</div>';
+    }
+
+    const splitDetail = exp.splitAmong.map(p =>
+      '<span><b>' + escapeHtml(p) + '</b> ' + exp.currency + ' ' + fmt2(shareOrig) + ' (≈$' + fmt(share) + ')</span>'
+    ).join('');
+
+    item.innerHTML =
+      '<div class="exp-top">' +
+        '<div class="exp-left">' +
+          '<div class="name">' + escapeHtml(exp.name) + ' ' + badges + '</div>' +
+          '<div class="meta">' + escapeHtml(exp.payer) + ' 付款 · 分帳 ' + exp.splitAmong.length + ' 人</div>' +
+        '</div>' +
+        '<div class="exp-right">' +
+          '<div class="exp-amt">' +
+            '<div class="orig">' + exp.currency + ' ' + fmt2(exp.amount) + '</div>' +
+            '<div class="hkd">≈ HKD ' + fmt(hkd) + '</div>' +
+          '</div>' +
+          '<button class="del" data-id="' + exp.id + '" aria-label="刪除">\u00D7</button>' +
+        '</div>' +
+      '</div>' +
+      hotelNote +
+      '<div class="split-detail">' + splitDetail + '</div>';
+    containerEl.appendChild(item);
+  });
+  containerEl.querySelectorAll('.del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.expenses = state.expenses.filter(e => e.id !== Number(btn.dataset.id));
+      saveState();
+      renderAll();
+    });
+  });
+}
+
+function renderExpenses(){
+  const titleEl = document.getElementById('expense-list-title');
+  titleEl.textContent = selectedDay === 'all' ? '記帳明細（全程）' : '記帳明細（' + selectedDay + '）';
+  const list = state.expenses.filter(e => e.date !== PRE && (selectedDay === 'all' || e.date === selectedDay));
+  renderExpenseItems(document.getElementById('expense-list'), list, selectedDay === 'all');
+}
+
+function renderPretrip(){
+  const list = state.expenses.filter(e => e.date === PRE);
+  renderExpenseItems(document.getElementById('pretrip-list'), list, false);
+}
+
+// ---------- Settlement (always whole-trip, all expenses incl. pre-trip) ----------
+function computeBalances(){
+  const paid = {}; const owes = {};
+  state.people.forEach(p => { paid[p]=0; owes[p]=0; });
+
+  state.expenses.forEach(exp => {
+    const hkd = toHKD(exp.amount, exp.currency);
+    if(paid[exp.payer] === undefined) paid[exp.payer] = 0;
+    paid[exp.payer] += hkd;
+    const share = hkd / exp.splitAmong.length;
+    exp.splitAmong.forEach(person => {
+      if(owes[person] === undefined) owes[person] = 0;
+      owes[person] += share;
+    });
+  });
+
+  const net = {};
+  state.people.forEach(p => { net[p] = (paid[p]||0) - (owes[p]||0); });
+  return { paid, owes, net };
+}
+
+function renderSettlement(){
+  const { paid, net } = computeBalances();
+
+  const paidEl = document.getElementById('paid-list');
+  if(state.people.length === 0){
+    paidEl.innerHTML = '<div class="empty">未有同行人</div>';
+  } else {
+    paidEl.innerHTML = '';
+    state.people.forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'settle-line';
+      row.innerHTML = '<span class="who">' + escapeHtml(p) + '</span><span class="amt">HKD ' + fmt(paid[p]||0) + '</span>';
+      paidEl.appendChild(row);
+    });
+  }
+
+  const settleEl = document.getElementById('settle-list');
+  if(state.expenses.length === 0){
+    settleEl.innerHTML = '<div class="empty">未有記錄</div>';
+    return;
+  }
+  settleEl.innerHTML = '';
+  state.people.forEach(p => {
+    const n = net[p] || 0;
+    const row = document.createElement('div');
+    row.className = 'settle-line';
+    let label, cls;
+    if(n > 0.5){ label = '應收 HKD ' + fmt(n); cls = 'owed'; }
+    else if(n < -0.5){ label = '應找 HKD ' + fmt(Math.abs(n)); cls = 'owe'; }
+    else { label = '找數平衡'; cls = ''; }
+    row.innerHTML = '<span class="who">' + escapeHtml(p) + '</span><span class="amt ' + cls + '">' + label + '</span>';
+    settleEl.appendChild(row);
+  });
+}
+
+// ---------- Header stats ----------
+function renderHeader(){
+  const totalHkd = state.expenses.reduce((sum, e) => sum + toHKD(e.amount, e.currency), 0);
+  document.getElementById('totalHkd').textContent = '$' + fmt(totalHkd);
+  document.getElementById('totalCount').textContent = state.expenses.length;
+  document.getElementById('totalPeople').textContent = state.people.length;
+  document.getElementById('totalPre').textContent = state.expenses.filter(e => e.date === PRE).length;
+}
+
+function renderAll(){
+  renderDayFilter();
+  renderDateSelect();
+  renderQuickItems();
+  renderPeopleList();
+  renderRates();
+  renderExpenses();
+  renderPretrip();
+  renderSettlement();
+  renderHeader();
+}
+
+loadState();
+</script>
+</body>
+</html>

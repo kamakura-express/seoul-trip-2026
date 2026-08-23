@@ -108,7 +108,7 @@
     font-size:12px; cursor:pointer; color: var(--ink);
   }
   .chip:hover{ border-color: var(--gold); }
-  .chip.hotel{ border-color: var(--teal); color: var(--teal); background: var(--teal-l); }
+  .chip.hotel:active{ border-color: var(--teal); color: var(--teal); background: var(--teal-l); }
 
   .hotel-fields{
     margin-top: 12px; padding: 12px; background: var(--teal-l); border-radius:10px; border: 1px dashed var(--teal);
@@ -261,28 +261,8 @@
         </div>
       </div>
 
-      <label>平台 / 商戶（訂酒店機票可入返，其他消費可留空）</label>
+      <label>平台 / 商戶（選填）</label>
       <input id="f-platform" placeholder="例如：Agoda、Klook、Trip.com、現場">
-
-      <div class="checkline">
-        <input type="checkbox" id="f-is-hotel">
-        <label for="f-is-hotel">呢筆係酒店訂單</label>
-      </div>
-      <div class="hotel-fields" id="hotel-fields">
-        <div class="row2">
-          <div>
-            <label>免費取消死線</label>
-            <input type="date" id="f-cancel-date">
-          </div>
-          <div>
-            <label>過數狀態</label>
-            <select id="f-paid-status">
-              <option value="unpaid">未過數</option>
-              <option value="paid">已過數</option>
-            </select>
-          </div>
-        </div>
-      </div>
 
       <label>分帳對象（未選 = 全部平分）</label>
       <div id="f-split" class="chip-row"></div>
@@ -425,16 +405,18 @@ let selectedDay = 'all';
 let suppressNextRemoteApply = false; // avoids re-rendering off our own just-sent write
 
 const QUICK_ITEMS = [
-  { name:'酒店訂金', hotel:true },
+  { name:'飲飲食食' },
+  { name:'藥妝' },
+  { name:'手信' },
+  { name:'買嘢' },
   { name:'地鐵 / 交通' },
-  { name:'餐廳' },
   { name:'景點門票' },
-  { name:'購物 / 手信' },
   { name:'兌換現金' }
 ];
 const QUICK_ITEMS_PRE = [
   { name:'來回機票' },
   { name:'酒店訂金', hotel:true },
+  { name:'交通' },
   { name:'旅遊保險' },
   { name:'上網卡 / Wifi蛋' },
   { name:'簽證 / ETA' }
@@ -531,12 +513,10 @@ function renderQuickItems(){
   el.innerHTML = '';
   QUICK_ITEMS.forEach(qi => {
     const chip = document.createElement('div');
-    chip.className = 'chip' + (qi.hotel ? ' hotel' : '');
+    chip.className = 'chip';
     chip.textContent = qi.name;
     chip.addEventListener('click', () => {
       document.getElementById('f-name').value = qi.name;
-      document.getElementById('f-is-hotel').checked = !!qi.hotel;
-      toggleHotelFields('f-is-hotel','hotel-fields');
     });
     el.appendChild(chip);
   });
@@ -559,7 +539,6 @@ function renderQuickItems(){
 function toggleHotelFields(checkboxId, fieldsId){
   document.getElementById(fieldsId).classList.toggle('show', document.getElementById(checkboxId).checked);
 }
-document.getElementById('f-is-hotel').addEventListener('change', () => toggleHotelFields('f-is-hotel','hotel-fields'));
 document.getElementById('p-is-hotel').addEventListener('change', () => toggleHotelFields('p-is-hotel','hotel-fields-p'));
 
 // ---------- People ----------
@@ -656,9 +635,10 @@ function addExpenseFromForm(prefix, dateValue){
   const currency = document.getElementById(prefix + '-currency').value;
   const payer = document.getElementById(prefix + '-payer').value;
   const platform = document.getElementById(prefix + '-platform').value.trim();
-  const isHotel = document.getElementById(prefix + '-is-hotel').checked;
-  const cancelDate = document.getElementById(prefix + '-cancel-date').value;
-  const paidStatus = document.getElementById(prefix + '-paid-status').value;
+  const hotelCheckbox = document.getElementById(prefix + '-is-hotel');
+  const isHotel = hotelCheckbox ? hotelCheckbox.checked : false;
+  const cancelDate = isHotel ? document.getElementById(prefix + '-cancel-date').value : '';
+  const paidStatus = isHotel ? document.getElementById(prefix + '-paid-status').value : '';
   const errEl = ensureErrorEl(prefix);
 
   if(!name){ showError(errEl, '請輸入項目名稱'); return false; }
@@ -678,10 +658,12 @@ function addExpenseFromForm(prefix, dateValue){
   document.getElementById(prefix + '-name').value = '';
   document.getElementById(prefix + '-amount').value = '';
   document.getElementById(prefix + '-platform').value = '';
-  document.getElementById(prefix + '-is-hotel').checked = false;
-  document.getElementById(prefix + '-cancel-date').value = '';
-  document.getElementById(prefix + '-paid-status').value = 'unpaid';
-  toggleHotelFields(prefix + '-is-hotel', prefix === 'f' ? 'hotel-fields' : 'hotel-fields-p');
+  if(hotelCheckbox){
+    hotelCheckbox.checked = false;
+    document.getElementById(prefix + '-cancel-date').value = '';
+    document.getElementById(prefix + '-paid-status').value = 'unpaid';
+    toggleHotelFields(prefix + '-is-hotel', prefix === 'f' ? 'hotel-fields' : 'hotel-fields-p');
+  }
   document.querySelectorAll('#' + prefix + '-split input').forEach(i=>i.checked=false);
 
   saveState();

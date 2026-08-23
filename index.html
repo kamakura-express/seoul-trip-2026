@@ -128,6 +128,7 @@
   .exp-amt .orig{ font-size:13px; font-weight:600; font-family:'IBM Plex Mono',monospace; }
   .exp-amt .hkd{ font-size:11px; color: var(--teal); font-family:'IBM Plex Mono',monospace; }
   .del{ background:none; border:none; color:var(--pink); font-size:16px; padding:2px 4px; }
+  .edit-btn{ background:none; border:none; color:var(--teal); font-size:14px; padding:2px 4px; }
   .badge{ font-size:10px; padding:2px 7px; border-radius:10px; background: var(--teal-l); color: var(--teal); letter-spacing:0.3px; font-weight:600; }
   .badge.day{ background: var(--gold-l); color:#a35b00; }
   .badge.warn{ background: var(--pink-l); color: var(--pink); }
@@ -267,6 +268,7 @@
       <label>分帳對象（未選 = 全部平分）</label>
       <div id="f-split" class="chip-row"></div>
       <button class="btn-main" id="add-expense">加入記帳</button>
+      <button type="button" class="btn-ghost" id="cancel-edit-f" style="display:none; margin-top:8px; width:100%; text-align:center;">取消編輯</button>
     </div>
 
     <div class="card">
@@ -343,6 +345,7 @@
       <label>分帳對象（未選 = 全部平分）</label>
       <div id="p-split" class="chip-row"></div>
       <button class="btn-main teal" id="add-expense-p">加入記帳</button>
+      <button type="button" class="btn-ghost" id="cancel-edit-p" style="display:none; margin-top:8px; width:100%; text-align:center;">取消編輯</button>
     </div>
 
     <div class="card">
@@ -402,6 +405,8 @@ let state = {
 };
 
 let selectedDay = 'all';
+let editingId = null;
+let editingPrefix = null;
 let suppressNextRemoteApply = false; // avoids re-rendering off our own just-sent write
 
 const QUICK_ITEMS = [
@@ -649,11 +654,23 @@ function addExpenseFromForm(prefix, dateValue){
   const splitChecked = Array.from(document.querySelectorAll('#' + prefix + '-split input:checked')).map(i=>i.value);
   const splitAmong = splitChecked.length > 0 ? splitChecked : [...state.people];
 
-  state.expenses.unshift({
-    id: Date.now(),
-    date: dateValue, name, amount, currency, payer, splitAmong, platform,
-    isHotel, cancelDate: isHotel ? cancelDate : '', paidStatus: isHotel ? paidStatus : ''
-  });
+  if(editingId !== null && editingPrefix === prefix){
+    const exp = state.expenses.find(e => e.id === editingId);
+    if(exp){
+      Object.assign(exp, {
+        date: dateValue, name, amount, currency, payer, splitAmong, platform,
+        isHotel, cancelDate: isHotel ? cancelDate : '', paidStatus: isHotel ? paidStatus : ''
+      });
+    }
+    editingId = null; editingPrefix = null;
+    setFormButtonLabel(prefix, false);
+  } else {
+    state.expenses.unshift({
+      id: Date.now(),
+      date: dateValue, name, amount, currency, payer, splitAmong, platform,
+      isHotel, cancelDate: isHotel ? cancelDate : '', paidStatus: isHotel ? paidStatus : ''
+    });
+  }
 
   document.getElementById(prefix + '-name').value = '';
   document.getElementById(prefix + '-amount').value = '';
@@ -670,6 +687,67 @@ function addExpenseFromForm(prefix, dateValue){
   renderAll();
   return true;
 }
+
+function setFormButtonLabel(prefix, isEditing){
+  const btn = document.getElementById('add-expense' + (prefix === 'p' ? '-p' : ''));
+  const cancelBtn = document.getElementById('cancel-edit-' + prefix);
+  btn.textContent = isEditing ? '更新呢筆' : '加入記帳';
+  cancelBtn.style.display = isEditing ? 'block' : 'none';
+}
+
+function startEdit(id, prefix){
+  const exp = state.expenses.find(e => e.id === id);
+  if(!exp) return;
+  editingId = id;
+  editingPrefix = prefix;
+
+  document.getElementById(prefix + '-name').value = exp.name;
+  document.getElementById(prefix + '-amount').value = exp.amount;
+  document.getElementById(prefix + '-currency').value = exp.currency;
+  document.getElementById(prefix + '-payer').value = exp.payer;
+  document.getElementById(prefix + '-platform').value = exp.platform || '';
+  document.querySelectorAll('#' + prefix + '-split input').forEach(cb => {
+    cb.checked = exp.splitAmong.includes(cb.value);
+  });
+
+  if(prefix === 'f'){
+    document.getElementById('f-date').value = exp.date;
+  }
+  if(prefix === 'p'){
+    const hotelCheckbox = document.getElementById('p-is-hotel');
+    hotelCheckbox.checked = exp.isHotel;
+    toggleHotelFields('p-is-hotel', 'hotel-fields-p');
+    if(exp.isHotel){
+      document.getElementById('p-cancel-date').value = exp.cancelDate || '';
+      document.getElementById('p-paid-status').value = exp.paidStatus || 'unpaid';
+    }
+  }
+
+  setFormButtonLabel(prefix, true);
+  document.getElementById('add-expense' + (prefix === 'p' ? '-p' : ''))
+    .scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function cancelEdit(prefix){
+  if(!prefix) return;
+  editingId = null;
+  editingPrefix = null;
+  document.getElementById(prefix + '-name').value = '';
+  document.getElementById(prefix + '-amount').value = '';
+  document.getElementById(prefix + '-platform').value = '';
+  document.querySelectorAll('#' + prefix + '-split input').forEach(i => i.checked = false);
+  const hotelCheckbox = document.getElementById(prefix + '-is-hotel');
+  if(hotelCheckbox){
+    hotelCheckbox.checked = false;
+    document.getElementById(prefix + '-cancel-date').value = '';
+    document.getElementById(prefix + '-paid-status').value = 'unpaid';
+    toggleHotelFields(prefix + '-is-hotel', prefix === 'f' ? 'hotel-fields' : 'hotel-fields-p');
+  }
+  setFormButtonLabel(prefix, false);
+}
+
+document.getElementById('cancel-edit-f').addEventListener('click', () => cancelEdit('f'));
+document.getElementById('cancel-edit-p').addEventListener('click', () => cancelEdit('p'));
 
 function ensureErrorEl(prefix){
   let el = document.getElementById(prefix + '-error');
@@ -692,7 +770,7 @@ document.getElementById('add-expense-p').addEventListener('click', () => {
 });
 
 // ---------- Expense list rendering (shared) ----------
-function renderExpenseItems(containerEl, list, showDayBadge){
+function renderExpenseItems(containerEl, list, showDayBadge, prefix){
   if(list.length === 0){
     containerEl.innerHTML = '<div class="empty">未有記錄</div>';
     return;
@@ -733,6 +811,7 @@ function renderExpenseItems(containerEl, list, showDayBadge){
             '<div class="orig">' + exp.currency + ' ' + fmt2(exp.amount) + '</div>' +
             '<div class="hkd">≈ HKD ' + fmt(hkd) + '</div>' +
           '</div>' +
+          '<button class="edit-btn" data-id="' + exp.id + '" aria-label="編輯">\u270E</button>' +
           '<button class="del" data-id="' + exp.id + '" aria-label="刪除">\u00D7</button>' +
         '</div>' +
       '</div>' +
@@ -743,9 +822,13 @@ function renderExpenseItems(containerEl, list, showDayBadge){
   containerEl.querySelectorAll('.del').forEach(btn => {
     btn.addEventListener('click', () => {
       state.expenses = state.expenses.filter(e => e.id !== Number(btn.dataset.id));
+      if(editingId === Number(btn.dataset.id)){ cancelEdit(editingPrefix); }
       saveState();
       renderAll();
     });
+  });
+  containerEl.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => startEdit(Number(btn.dataset.id), prefix));
   });
 }
 
@@ -753,12 +836,12 @@ function renderExpenses(){
   const titleEl = document.getElementById('expense-list-title');
   titleEl.textContent = selectedDay === 'all' ? '記帳明細（全程）' : '記帳明細（' + selectedDay + '）';
   const list = state.expenses.filter(e => e.date !== PRE && (selectedDay === 'all' || e.date === selectedDay));
-  renderExpenseItems(document.getElementById('expense-list'), list, selectedDay === 'all');
+  renderExpenseItems(document.getElementById('expense-list'), list, selectedDay === 'all', 'f');
 }
 
 function renderPretrip(){
   const list = state.expenses.filter(e => e.date === PRE);
-  renderExpenseItems(document.getElementById('pretrip-list'), list, false);
+  renderExpenseItems(document.getElementById('pretrip-list'), list, false, 'p');
 }
 
 // ---------- Settlement (always whole-trip, all expenses incl. pre-trip) ----------

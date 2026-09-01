@@ -83,6 +83,56 @@
   }
   .day-chip.active{ background: var(--teal); color:#fff; border-color: var(--teal); }
 
+  .view-toggle{ display:flex; gap:8px; margin-bottom:14px; }
+  .view-chip{
+    flex:1; text-align:center; padding: 9px 10px; border-radius:10px; background: var(--card);
+    border:1px solid var(--line); font-size:13px; color:var(--muted); cursor:pointer; font-weight:500;
+  }
+  .view-chip.active{ background: var(--ink); color:#fff; border-color: var(--ink); }
+
+  .itin-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px solid var(--line); align-items:flex-start; }
+  .itin-item:last-child{ border-bottom:none; }
+  .itin-time{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px; color:var(--teal); min-width:48px; padding-top:1px; }
+  .itin-body{ flex:1; }
+  .itin-name{ font-size:14px; font-weight:600; }
+  .itin-note{ font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .itin-actions{ display:flex; gap:4px; flex-shrink:0; }
+
+  .timeline{ position:relative; padding-left:22px; }
+  .timeline::before{ content:''; position:absolute; left:8px; top:6px; bottom:6px; width:2px; background:var(--line); }
+  .timeline-item{ position:relative; margin-bottom:16px; }
+  .timeline-item:last-child{ margin-bottom:0; }
+  .timeline-dot{
+    position:absolute; left:-19px; top:5px; width:11px; height:11px; border-radius:50%;
+    background: var(--teal); border:2px solid var(--card); box-shadow: 0 0 0 1px var(--teal);
+  }
+  .timeline-time{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:13px; color:var(--teal); margin-bottom:6px; }
+  .timeline-card{ background: var(--bg); border:1px solid var(--line); border-radius:10px; padding:11px 14px; }
+  .itin-top-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+
+  .week-grid{ display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; -webkit-overflow-scrolling:touch; }
+  .week-day-col{
+    flex: 0 0 200px; background: var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px;
+  }
+  .week-day-title{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px; color:var(--pink); margin-bottom:8px; }
+  .week-itin-row{ display:flex; gap:8px; font-size:12.5px; padding:6px 0; border-bottom:1px dotted var(--line); align-items:flex-start; }
+  .week-itin-row:last-child{ border-bottom:none; }
+  .week-itin-row .t{ font-family:'IBM Plex Mono',monospace; color:var(--teal); min-width:40px; flex-shrink:0; }
+
+  .hotel-banner{
+    display:flex; align-items:center; gap:8px; background: var(--gold-l); border:1px dashed var(--gold);
+    border-radius:10px; padding:9px 14px; margin-bottom:14px; font-size:12.5px; color:#a35b00;
+  }
+  .hotel-banner b{ font-weight:700; }
+
+  .hotel-item{ padding:12px 0; border-bottom:1px solid var(--line); }
+  .hotel-item:last-child{ border-bottom:none; }
+  .hotel-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .hotel-name{ font-size:14px; font-weight:600; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .hotel-meta{ font-size:11.5px; color:var(--muted); margin-top:3px; font-family:'IBM Plex Mono',monospace; }
+  .hotel-note-line{ font-size:11.5px; color:var(--teal); margin-top:6px; }
+
   .card{ background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; }
   .card h3{ font-family:'Noto Serif HK',serif; font-size:15px; margin:0 0 14px; padding-bottom:8px; border-bottom: 1px solid var(--line); color: var(--ink); }
 
@@ -121,6 +171,15 @@
 
   .exp-item{ padding: 11px 0; border-bottom: 1px solid var(--line); }
   .exp-item:last-child{ border-bottom:none; }
+
+  .cat-group{ margin-bottom: 6px; }
+  .cat-group:last-child{ margin-bottom:0; }
+  .cat-header{
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:600;
+    border-radius:8px; padding:6px 12px; margin: 12px 0 4px;
+  }
+  .cat-group:first-child .cat-header{ margin-top:0; }
   .exp-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .exp-left .name{ font-size:14px; font-weight:600; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
   .exp-left .meta{ font-size:11px; color:var(--muted); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
@@ -190,6 +249,10 @@
     .chip{ font-size:11.5px; padding:5px 10px; }
 
     .settle-line{ font-size:12.5px; }
+
+    .week-day-col{ flex-basis: 168px; padding:12px 13px; }
+    .week-day-title{ font-size:12px; }
+    .week-itin-row{ font-size:11.5px; }
   }
   @media (max-width: 360px){
     .row3{ grid-template-columns: 1fr; }
@@ -225,6 +288,7 @@
   <div class="tabs">
     <div class="tab active" data-tab="expenses">記帳</div>
     <div class="tab" data-tab="pretrip">出發前 / 未定</div>
+    <div class="tab" data-tab="itinerary">行程</div>
     <div class="tab" data-tab="rates">匯率</div>
     <div class="tab" data-tab="settle">結算</div>
   </div>
@@ -242,6 +306,9 @@
 
       <label>項目名稱</label>
       <input id="f-name" placeholder="例如：明洞晚餐、地鐵票">
+
+      <label>分類</label>
+      <select id="f-category"></select>
 
       <div class="row3">
         <div>
@@ -291,7 +358,7 @@
 
   <div class="panel" id="panel-pretrip">
     <div class="card">
-      <h3>新增一筆（出發前 / 未定日子）</h3>
+      <h3>新增一筆（出發前）</h3>
       <p style="font-size:11px; color:var(--muted); margin:0 0 10px;">呢度用嚟記錄未歸類到某一日嘅使費 —— 例如機票、酒店訂金、簽證、保險、上網卡。</p>
 
       <label>常用項目（撳一下自動填名）</label>
@@ -299,6 +366,9 @@
 
       <label>項目名稱</label>
       <input id="p-name" placeholder="例如：來回機票、酒店訂金">
+
+      <label>分類</label>
+      <select id="p-category"></select>
 
       <div class="row3">
         <div>
@@ -354,6 +424,73 @@
     </div>
   </div>
 
+  <div class="panel" id="panel-itinerary">
+    <div class="view-toggle" id="itin-view-toggle">
+      <div class="view-chip active" data-view="day">睇日</div>
+      <div class="view-chip" data-view="week">睇成個Week</div>
+      <div class="view-chip" data-view="hotel">酒店</div>
+    </div>
+
+    <div id="itin-day-view">
+      <div class="day-row" id="itin-day-filter"></div>
+      <div id="itin-hotel-banner"></div>
+
+      <div class="card">
+        <h3>新增一項行程</h3>
+        <div class="row2">
+          <div>
+            <label>時間</label>
+            <input type="time" id="it-time">
+          </div>
+          <div>
+            <label>項目</label>
+            <input id="it-name" placeholder="例如：景福宮、明洞午餐">
+          </div>
+        </div>
+        <label>備註（選填）</label>
+        <input id="it-note" placeholder="例如：地址、注意事項">
+        <button class="btn-main" id="add-itin" style="background:var(--teal);">加入行程</button>
+        <button type="button" class="btn-ghost" id="cancel-edit-it" style="display:none; margin-top:8px; width:100%; text-align:center;">取消編輯</button>
+      </div>
+
+      <div class="card">
+        <h3 id="itin-list-title">行程明細</h3>
+        <div id="itin-list"><div class="empty">呢日未安排行程</div></div>
+      </div>
+    </div>
+
+    <div id="itin-week-view" style="display:none;"></div>
+
+    <div id="itin-hotel-view" style="display:none;">
+      <div class="card">
+        <h3>新增酒店</h3>
+        <label>酒店名</label>
+        <input id="h-name" placeholder="例如：明洞XX Hotel">
+        <div class="row2">
+          <div>
+            <label>Check-in</label>
+            <select id="h-checkin"></select>
+          </div>
+          <div>
+            <label>Check-out</label>
+            <select id="h-checkout"></select>
+          </div>
+        </div>
+        <label>平台（選填）</label>
+        <input id="h-platform" placeholder="例如：Agoda、Booking.com">
+        <label>地址 / 備註（選填）</label>
+        <input id="h-note" placeholder="例如：地址、房型">
+        <button class="btn-main" id="add-hotel" style="background:var(--gold);">加入酒店</button>
+        <button type="button" class="btn-ghost" id="cancel-edit-h" style="display:none; margin-top:8px; width:100%; text-align:center;">取消編輯</button>
+      </div>
+
+      <div class="card">
+        <h3>酒店清單</h3>
+        <div id="hotel-list"><div class="empty">未有酒店資料</div></div>
+      </div>
+    </div>
+  </div>
+
   <div class="panel" id="panel-rates">
     <div class="card">
       <h3>匯率設定（兌 1 HKD）</h3>
@@ -401,30 +538,54 @@ const PRE = 'PRE';
 let state = {
   people: ['我'],
   expenses: [],
-  rates: { KRW: 0.055, HKD: 1, RMB: 1.08 }
+  rates: { KRW: 0.055, HKD: 1, RMB: 1.08 },
+  itinerary: {},
+  hotels: []
 };
 
 let selectedDay = 'all';
 let editingId = null;
 let editingPrefix = null;
+let itinSelectedDay = TRIP_DAYS[0];
+let itinView = 'day';
+let editingItinId = null;
+let editingHotelId = null;
 let suppressNextRemoteApply = false; // avoids re-rendering off our own just-sent write
 
+const CATEGORY_OPTIONS = ['飲飲食食','藥妝','手信','買嘢','地鐵 / 交通','門票','兌換現金','機票','酒店','保險','上網卡 / 通訊','簽證','其他'];
+const CATEGORY_ALIASES = { '景點門票':'門票' }; // keep older saved entries grouping correctly after rename
+const CATEGORY_COLORS = {
+  '飲飲食食':        { bg:'#ffe1ea', text:'#ff5c86' },
+  '藥妝':            { bg:'#d7f4ef', text:'#0fa896' },
+  '手信':            { bg:'#fff0d6', text:'#a35b00' },
+  '買嘢':            { bg:'#efe3fb', text:'#7c4dbd' },
+  '地鐵 / 交通':      { bg:'#dbeafe', text:'#1d64c9' },
+  '門票':            { bg:'#ffe8d1', text:'#c2600a' },
+  '兌換現金':        { bg:'#defbe6', text:'#1f9254' },
+  '機票':            { bg:'#e0f2fe', text:'#0284c7' },
+  '酒店':            { bg:'#fde2e7', text:'#be123c' },
+  '保險':            { bg:'#e0e7ff', text:'#4338ca' },
+  '上網卡 / 通訊':    { bg:'#cffafe', text:'#0e7490' },
+  '簽證':            { bg:'#ecfccb', text:'#4d7c0f' },
+  '其他':            { bg:'#e5e7eb', text:'#4b5563' }
+};
+
 const QUICK_ITEMS = [
-  { name:'飲飲食食' },
-  { name:'藥妝' },
-  { name:'手信' },
-  { name:'買嘢' },
-  { name:'地鐵 / 交通' },
-  { name:'景點門票' },
-  { name:'兌換現金' }
+  { name:'飲飲食食', category:'飲飲食食' },
+  { name:'藥妝', category:'藥妝' },
+  { name:'手信', category:'手信' },
+  { name:'買嘢', category:'買嘢' },
+  { name:'地鐵 / 交通', category:'地鐵 / 交通' },
+  { name:'門票', category:'門票' },
+  { name:'兌換現金', category:'兌換現金' }
 ];
 const QUICK_ITEMS_PRE = [
-  { name:'來回機票' },
-  { name:'酒店訂金', hotel:true },
-  { name:'交通' },
-  { name:'旅遊保險' },
-  { name:'上網卡 / Wifi蛋' },
-  { name:'簽證 / ETA' }
+  { name:'來回機票', category:'機票' },
+  { name:'酒店訂金', hotel:true, category:'酒店' },
+  { name:'交通', category:'地鐵 / 交通' },
+  { name:'旅遊保險', category:'保險' },
+  { name:'上網卡 / Wifi蛋', category:'上網卡 / 通訊' },
+  { name:'簽證 / ETA', category:'簽證' }
 ];
 
 function loadState(){
@@ -436,7 +597,7 @@ function loadState(){
     if(suppressNextRemoteApply){ suppressNextRemoteApply = false; return; }
     const val = snapshot.val();
     if(val){
-      state = Object.assign({ people:['我'], expenses:[], rates:{KRW:0.055,HKD:1,RMB:1.08} }, val);
+      state = Object.assign({ people:['我'], expenses:[], rates:{KRW:0.055,HKD:1,RMB:1.08}, itinerary:{}, hotels:[] }, val);
     }
     renderAll();
     statusEl.textContent = '已連接';
@@ -510,9 +671,35 @@ function renderDateSelect(){
     fSel.appendChild(opt);
   });
   fSel.value = TRIP_DAYS.includes(prev) ? prev : (selectedDay !== 'all' ? selectedDay : TRIP_DAYS[0]);
+
+  ['h-checkin','h-checkout'].forEach(id => {
+    const sel = document.getElementById(id);
+    const prevV = sel.value;
+    sel.innerHTML = '';
+    TRIP_DAYS.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d; opt.textContent = d;
+      sel.appendChild(opt);
+    });
+    sel.value = TRIP_DAYS.includes(prevV) ? prevV : (id === 'h-checkout' ? TRIP_DAYS[TRIP_DAYS.length-1] : TRIP_DAYS[0]);
+  });
 }
 
 // ---------- Quick items ----------
+function renderCategorySelects(){
+  ['f-category','p-category'].forEach(id => {
+    const sel = document.getElementById(id);
+    const prev = sel.value;
+    sel.innerHTML = '';
+    CATEGORY_OPTIONS.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      sel.appendChild(opt);
+    });
+    sel.value = CATEGORY_OPTIONS.includes(prev) ? prev : CATEGORY_OPTIONS[CATEGORY_OPTIONS.length - 1];
+  });
+}
+
 function renderQuickItems(){
   const el = document.getElementById('quick-items');
   el.innerHTML = '';
@@ -522,6 +709,7 @@ function renderQuickItems(){
     chip.textContent = qi.name;
     chip.addEventListener('click', () => {
       document.getElementById('f-name').value = qi.name;
+      document.getElementById('f-category').value = qi.category;
     });
     el.appendChild(chip);
   });
@@ -534,6 +722,7 @@ function renderQuickItems(){
     chip.textContent = qi.name;
     chip.addEventListener('click', () => {
       document.getElementById('p-name').value = qi.name;
+      document.getElementById('p-category').value = qi.category;
       document.getElementById('p-is-hotel').checked = !!qi.hotel;
       toggleHotelFields('p-is-hotel','hotel-fields-p');
     });
@@ -640,6 +829,7 @@ function addExpenseFromForm(prefix, dateValue){
   const currency = document.getElementById(prefix + '-currency').value;
   const payer = document.getElementById(prefix + '-payer').value;
   const platform = document.getElementById(prefix + '-platform').value.trim();
+  const category = document.getElementById(prefix + '-category').value;
   const hotelCheckbox = document.getElementById(prefix + '-is-hotel');
   const isHotel = hotelCheckbox ? hotelCheckbox.checked : false;
   const cancelDate = isHotel ? document.getElementById(prefix + '-cancel-date').value : '';
@@ -658,7 +848,7 @@ function addExpenseFromForm(prefix, dateValue){
     const exp = state.expenses.find(e => e.id === editingId);
     if(exp){
       Object.assign(exp, {
-        date: dateValue, name, amount, currency, payer, splitAmong, platform,
+        date: dateValue, name, amount, currency, payer, splitAmong, platform, category,
         isHotel, cancelDate: isHotel ? cancelDate : '', paidStatus: isHotel ? paidStatus : ''
       });
     }
@@ -667,7 +857,7 @@ function addExpenseFromForm(prefix, dateValue){
   } else {
     state.expenses.unshift({
       id: Date.now(),
-      date: dateValue, name, amount, currency, payer, splitAmong, platform,
+      date: dateValue, name, amount, currency, payer, splitAmong, platform, category,
       isHotel, cancelDate: isHotel ? cancelDate : '', paidStatus: isHotel ? paidStatus : ''
     });
   }
@@ -675,6 +865,7 @@ function addExpenseFromForm(prefix, dateValue){
   document.getElementById(prefix + '-name').value = '';
   document.getElementById(prefix + '-amount').value = '';
   document.getElementById(prefix + '-platform').value = '';
+  document.getElementById(prefix + '-category').value = CATEGORY_OPTIONS[CATEGORY_OPTIONS.length - 1];
   if(hotelCheckbox){
     hotelCheckbox.checked = false;
     document.getElementById(prefix + '-cancel-date').value = '';
@@ -706,6 +897,7 @@ function startEdit(id, prefix){
   document.getElementById(prefix + '-currency').value = exp.currency;
   document.getElementById(prefix + '-payer').value = exp.payer;
   document.getElementById(prefix + '-platform').value = exp.platform || '';
+  document.getElementById(prefix + '-category').value = exp.category || CATEGORY_OPTIONS[CATEGORY_OPTIONS.length - 1];
   document.querySelectorAll('#' + prefix + '-split input').forEach(cb => {
     cb.checked = exp.splitAmong.includes(cb.value);
   });
@@ -735,6 +927,7 @@ function cancelEdit(prefix){
   document.getElementById(prefix + '-name').value = '';
   document.getElementById(prefix + '-amount').value = '';
   document.getElementById(prefix + '-platform').value = '';
+  document.getElementById(prefix + '-category').value = CATEGORY_OPTIONS[CATEGORY_OPTIONS.length - 1];
   document.querySelectorAll('#' + prefix + '-split input').forEach(i => i.checked = false);
   const hotelCheckbox = document.getElementById(prefix + '-is-hotel');
   if(hotelCheckbox){
@@ -770,55 +963,78 @@ document.getElementById('add-expense-p').addEventListener('click', () => {
 });
 
 // ---------- Expense list rendering (shared) ----------
+function buildExpItemHtml(exp, showDayBadge){
+  const hkd = toHKD(exp.amount, exp.currency);
+  const share = hkd / exp.splitAmong.length;
+  const shareOrig = exp.amount / exp.splitAmong.length;
+
+  let badges = '';
+  if(showDayBadge && exp.date && exp.date !== PRE){ badges += '<span class="badge day">' + escapeHtml(exp.date) + '</span>'; }
+  if(exp.platform){ badges += '<span class="badge">' + escapeHtml(exp.platform) + '</span>'; }
+  if(exp.isHotel){
+    badges += exp.paidStatus === 'paid' ? '<span class="badge">已過數</span>' : '<span class="badge warn">未過數</span>';
+  }
+
+  let hotelNote = '';
+  if(exp.isHotel && exp.cancelDate){
+    hotelNote = '<div class="hotel-note">免費取消死線：' + escapeHtml(exp.cancelDate) + '</div>';
+  }
+
+  const splitDetail = exp.splitAmong.map(p =>
+    '<span><b>' + escapeHtml(p) + '</b> ' + exp.currency + ' ' + fmt2(shareOrig) + ' (≈$' + fmt(share) + ')</span>'
+  ).join('');
+
+  return '<div class="exp-item" data-exp-id="' + exp.id + '">' +
+    '<div class="exp-top">' +
+      '<div class="exp-left">' +
+        '<div class="name">' + escapeHtml(exp.name) + ' ' + badges + '</div>' +
+        '<div class="meta">' + escapeHtml(exp.payer) + ' 付款 · 分帳 ' + exp.splitAmong.length + ' 人</div>' +
+      '</div>' +
+      '<div class="exp-right">' +
+        '<div class="exp-amt">' +
+          '<div class="orig">' + exp.currency + ' ' + fmt2(exp.amount) + '</div>' +
+          '<div class="hkd">≈ HKD ' + fmt(hkd) + '</div>' +
+        '</div>' +
+        '<button class="edit-btn" data-id="' + exp.id + '" aria-label="編輯">\u270E</button>' +
+        '<button class="del" data-id="' + exp.id + '" aria-label="刪除">\u00D7</button>' +
+      '</div>' +
+    '</div>' +
+    hotelNote +
+    '<div class="split-detail">' + splitDetail + '</div>' +
+  '</div>';
+}
+
 function renderExpenseItems(containerEl, list, showDayBadge, prefix){
   if(list.length === 0){
     containerEl.innerHTML = '<div class="empty">未有記錄</div>';
     return;
   }
-  containerEl.innerHTML = '';
+
+  // Group by category, preserving CATEGORY_OPTIONS order; anything without
+  // a stored category (older entries) falls back to the last ("其他") bucket.
+  const fallbackCat = CATEGORY_OPTIONS[CATEGORY_OPTIONS.length - 1];
+  const groups = {};
   list.forEach(exp => {
-    const hkd = toHKD(exp.amount, exp.currency);
-    const share = hkd / exp.splitAmong.length;
-    const shareOrig = exp.amount / exp.splitAmong.length;
-
-    const item = document.createElement('div');
-    item.className = 'exp-item';
-
-    let badges = '';
-    if(showDayBadge && exp.date && exp.date !== PRE){ badges += '<span class="badge day">' + escapeHtml(exp.date) + '</span>'; }
-    if(exp.platform){ badges += '<span class="badge">' + escapeHtml(exp.platform) + '</span>'; }
-    if(exp.isHotel){
-      badges += exp.paidStatus === 'paid' ? '<span class="badge">已過數</span>' : '<span class="badge warn">未過數</span>';
-    }
-
-    let hotelNote = '';
-    if(exp.isHotel && exp.cancelDate){
-      hotelNote = '<div class="hotel-note">免費取消死線：' + escapeHtml(exp.cancelDate) + '</div>';
-    }
-
-    const splitDetail = exp.splitAmong.map(p =>
-      '<span><b>' + escapeHtml(p) + '</b> ' + exp.currency + ' ' + fmt2(shareOrig) + ' (≈$' + fmt(share) + ')</span>'
-    ).join('');
-
-    item.innerHTML =
-      '<div class="exp-top">' +
-        '<div class="exp-left">' +
-          '<div class="name">' + escapeHtml(exp.name) + ' ' + badges + '</div>' +
-          '<div class="meta">' + escapeHtml(exp.payer) + ' 付款 · 分帳 ' + exp.splitAmong.length + ' 人</div>' +
-        '</div>' +
-        '<div class="exp-right">' +
-          '<div class="exp-amt">' +
-            '<div class="orig">' + exp.currency + ' ' + fmt2(exp.amount) + '</div>' +
-            '<div class="hkd">≈ HKD ' + fmt(hkd) + '</div>' +
-          '</div>' +
-          '<button class="edit-btn" data-id="' + exp.id + '" aria-label="編輯">\u270E</button>' +
-          '<button class="del" data-id="' + exp.id + '" aria-label="刪除">\u00D7</button>' +
-        '</div>' +
-      '</div>' +
-      hotelNote +
-      '<div class="split-detail">' + splitDetail + '</div>';
-    containerEl.appendChild(item);
+    let cat = exp.category || fallbackCat;
+    cat = CATEGORY_ALIASES[cat] || cat;
+    if(!CATEGORY_OPTIONS.includes(cat)) cat = fallbackCat;
+    if(!groups[cat]) groups[cat] = [];
+    groups[cat].push(exp);
   });
+
+  let html = '';
+  CATEGORY_OPTIONS.forEach(cat => {
+    const items = groups[cat];
+    if(!items || items.length === 0) return;
+    const subtotal = items.reduce((sum, e) => sum + toHKD(e.amount, e.currency), 0);
+    const colors = CATEGORY_COLORS[cat] || CATEGORY_COLORS['其他'];
+    html += '<div class="cat-group">' +
+      '<div class="cat-header" style="background:' + colors.bg + '; color:' + colors.text + ';"><span>' + escapeHtml(cat) + '</span><span class="cat-total">HKD ' + fmt(subtotal) + '</span></div>' +
+      items.map(exp => buildExpItemHtml(exp, showDayBadge)).join('') +
+    '</div>';
+  });
+  containerEl.innerHTML = html;
+
   containerEl.querySelectorAll('.del').forEach(btn => {
     btn.addEventListener('click', () => {
       state.expenses = state.expenses.filter(e => e.id !== Number(btn.dataset.id));
@@ -909,14 +1125,270 @@ function renderHeader(){
   document.getElementById('totalPre').textContent = state.expenses.filter(e => e.date === PRE).length;
 }
 
+// ---------- Hotels ----------
+function hotelForDay(d){
+  return state.hotels.find(h => d >= h.checkIn && d < h.checkOut);
+}
+
+document.getElementById('add-hotel').addEventListener('click', () => {
+  const name = document.getElementById('h-name').value.trim();
+  const checkIn = document.getElementById('h-checkin').value;
+  const checkOut = document.getElementById('h-checkout').value;
+  const platform = document.getElementById('h-platform').value.trim();
+  const note = document.getElementById('h-note').value.trim();
+
+  if(!name) return;
+  if(checkOut <= checkIn){
+    alert('Check-out 日期要遲過 Check-in');
+    return;
+  }
+
+  const hotelData = { name, checkIn, checkOut, platform, note };
+
+  if(editingHotelId !== null){
+    const h = state.hotels.find(x => x.id === editingHotelId);
+    if(h) Object.assign(h, hotelData);
+    editingHotelId = null;
+  } else {
+    state.hotels.push(Object.assign({ id: Date.now() }, hotelData));
+  }
+
+  ['h-name','h-platform','h-note'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('add-hotel').textContent = '加入酒店';
+  document.getElementById('cancel-edit-h').style.display = 'none';
+
+  saveState();
+  renderAll();
+});
+
+document.getElementById('cancel-edit-h').addEventListener('click', cancelEditHotel);
+function cancelEditHotel(){
+  editingHotelId = null;
+  ['h-name','h-platform','h-note'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('add-hotel').textContent = '加入酒店';
+  document.getElementById('cancel-edit-h').style.display = 'none';
+}
+
+function startEditHotel(id){
+  const h = state.hotels.find(x => x.id === id);
+  if(!h) return;
+  editingHotelId = id;
+  document.getElementById('h-name').value = h.name;
+  document.getElementById('h-checkin').value = h.checkIn;
+  document.getElementById('h-checkout').value = h.checkOut;
+  document.getElementById('h-platform').value = h.platform || '';
+  document.getElementById('h-note').value = h.note || '';
+  document.getElementById('add-hotel').textContent = '更新呢間';
+  document.getElementById('cancel-edit-h').style.display = 'block';
+  document.getElementById('add-hotel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function renderHotels(){
+  const el = document.getElementById('hotel-list');
+  const list = state.hotels.slice().sort((a,b) => a.checkIn.localeCompare(b.checkIn));
+  if(list.length === 0){
+    el.innerHTML = '<div class="empty">未有酒店資料</div>';
+    return;
+  }
+  el.innerHTML = '';
+  list.forEach(h => {
+    const badges = h.platform ? '<span class="badge">' + escapeHtml(h.platform) + '</span>' : '';
+
+    const item = document.createElement('div');
+    item.className = 'hotel-item';
+    item.innerHTML =
+      '<div class="hotel-top">' +
+        '<div>' +
+          '<div class="hotel-name">' + escapeHtml(h.name) + ' ' + badges + '</div>' +
+          '<div class="hotel-meta">' + escapeHtml(h.checkIn) + ' → ' + escapeHtml(h.checkOut) + '</div>' +
+        '</div>' +
+        '<div class="itin-actions">' +
+          '<button class="edit-btn" data-id="' + h.id + '" aria-label="編輯">\u270E</button>' +
+          '<button class="del" data-id="' + h.id + '" aria-label="刪除">\u00D7</button>' +
+        '</div>' +
+      '</div>' +
+      (h.note ? '<div class="hotel-note-line">' + escapeHtml(h.note) + '</div>' : '');
+    el.appendChild(item);
+  });
+  el.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', () => startEditHotel(Number(btn.dataset.id))));
+  el.querySelectorAll('.del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.hotels = state.hotels.filter(h => h.id !== Number(btn.dataset.id));
+      if(editingHotelId === Number(btn.dataset.id)) cancelEditHotel();
+      saveState();
+      renderAll();
+    });
+  });
+}
+
+function renderHotelBanner(){
+  const el = document.getElementById('itin-hotel-banner');
+  const h = hotelForDay(itinSelectedDay);
+  el.innerHTML = h ? '<div class="hotel-banner">\u{1F3E8} <span>今晚住：<b>' + escapeHtml(h.name) + '</b></span></div>' : '';
+}
+
+// ---------- Itinerary ----------
+document.querySelectorAll('#itin-view-toggle .view-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    itinView = chip.dataset.view;
+    document.querySelectorAll('#itin-view-toggle .view-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    document.getElementById('itin-day-view').style.display = itinView === 'day' ? 'block' : 'none';
+    document.getElementById('itin-week-view').style.display = itinView === 'week' ? 'block' : 'none';
+    document.getElementById('itin-hotel-view').style.display = itinView === 'hotel' ? 'block' : 'none';
+    renderItinerary();
+  });
+});
+
+function renderItinDayFilter(){
+  const el = document.getElementById('itin-day-filter');
+  el.innerHTML = '';
+  TRIP_DAYS.forEach(d => {
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (itinSelectedDay === d ? ' active' : '');
+    chip.textContent = d;
+    chip.addEventListener('click', () => { itinSelectedDay = d; cancelEditItin(); renderItinerary(); });
+    el.appendChild(chip);
+  });
+}
+
+function sortedItinFor(day){
+  const list = (state.itinerary[day] || []).slice();
+  list.sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+  return list;
+}
+
+document.getElementById('add-itin').addEventListener('click', () => {
+  const time = document.getElementById('it-time').value;
+  const name = document.getElementById('it-name').value.trim();
+  const note = document.getElementById('it-note').value.trim();
+  if(!name) return;
+
+  if(!state.itinerary[itinSelectedDay]) state.itinerary[itinSelectedDay] = [];
+
+  if(editingItinId !== null){
+    const item = state.itinerary[itinSelectedDay].find(i => i.id === editingItinId);
+    if(item){ Object.assign(item, { time, name, note }); }
+    editingItinId = null;
+  } else {
+    state.itinerary[itinSelectedDay].push({ id: Date.now(), time, name, note });
+  }
+
+  document.getElementById('it-time').value = '';
+  document.getElementById('it-name').value = '';
+  document.getElementById('it-note').value = '';
+  document.getElementById('add-itin').textContent = '加入行程';
+  document.getElementById('cancel-edit-it').style.display = 'none';
+
+  saveState();
+  renderAll();
+});
+
+document.getElementById('cancel-edit-it').addEventListener('click', cancelEditItin);
+function cancelEditItin(){
+  editingItinId = null;
+  document.getElementById('it-time').value = '';
+  document.getElementById('it-name').value = '';
+  document.getElementById('it-note').value = '';
+  document.getElementById('add-itin').textContent = '加入行程';
+  document.getElementById('cancel-edit-it').style.display = 'none';
+}
+
+function startEditItin(day, id){
+  const item = (state.itinerary[day] || []).find(i => i.id === id);
+  if(!item) return;
+  itinSelectedDay = day;
+  editingItinId = id;
+  document.getElementById('it-time').value = item.time || '';
+  document.getElementById('it-name').value = item.name;
+  document.getElementById('it-note').value = item.note || '';
+  document.getElementById('add-itin').textContent = '更新呢項';
+  document.getElementById('cancel-edit-it').style.display = 'block';
+  renderItinerary();
+  document.getElementById('add-itin').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function renderItinDayView(){
+  renderHotelBanner();
+  const titleEl = document.getElementById('itin-list-title');
+  titleEl.textContent = '行程明細（' + itinSelectedDay + '）';
+  const list = sortedItinFor(itinSelectedDay);
+  const el = document.getElementById('itin-list');
+  if(list.length === 0){
+    el.innerHTML = '<div class="empty">呢日未安排行程</div>';
+    return;
+  }
+  el.innerHTML = '<div class="timeline"></div>';
+  const timeline = el.querySelector('.timeline');
+  list.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'timeline-item';
+    row.innerHTML =
+      '<div class="timeline-dot"></div>' +
+      '<div class="timeline-time">' + (item.time ? escapeHtml(item.time) : '--:--') + '</div>' +
+      '<div class="timeline-card">' +
+        '<div class="itin-top-row">' +
+          '<div class="itin-name">' + escapeHtml(item.name) + '</div>' +
+          '<div class="itin-actions">' +
+            '<button class="edit-btn" data-id="' + item.id + '" aria-label="編輯">\u270E</button>' +
+            '<button class="del" data-id="' + item.id + '" aria-label="刪除">\u00D7</button>' +
+          '</div>' +
+        '</div>' +
+        (item.note ? '<div class="itin-note">' + escapeHtml(item.note) + '</div>' : '') +
+      '</div>';
+    timeline.appendChild(row);
+  });
+  el.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => startEditItin(itinSelectedDay, Number(btn.dataset.id)));
+  });
+  el.querySelectorAll('.del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.itinerary[itinSelectedDay] = (state.itinerary[itinSelectedDay] || []).filter(i => i.id !== Number(btn.dataset.id));
+      if(editingItinId === Number(btn.dataset.id)) cancelEditItin();
+      saveState();
+      renderAll();
+    });
+  });
+}
+
+function renderItinWeekView(){
+  const el = document.getElementById('itin-week-view');
+  el.innerHTML = '<div class="week-grid"></div>';
+  const grid = el.querySelector('.week-grid');
+  TRIP_DAYS.forEach(d => {
+    const list = sortedItinFor(d);
+    const h = hotelForDay(d);
+    const col = document.createElement('div');
+    col.className = 'week-day-col';
+    let rows = '<div class="empty" style="padding:8px 0; font-size:12px;">未安排</div>';
+    if(list.length > 0){
+      rows = list.map(item =>
+        '<div class="week-itin-row"><span class="t">' + (item.time ? escapeHtml(item.time) : '--:--') + '</span><span>' + escapeHtml(item.name) + (item.note ? '<br><span style="color:var(--muted); font-size:11px;">' + escapeHtml(item.note) + '</span>' : '') + '</span></div>'
+      ).join('');
+    }
+    const hotelTag = h ? '<div class="week-itin-row" style="border-bottom:none; color:#a35b00;"><span class="t">\u{1F3E8}</span><span>' + escapeHtml(h.name) + '</span></div>' : '';
+    col.innerHTML = '<div class="week-day-title">' + d + '</div>' + hotelTag + rows;
+    grid.appendChild(col);
+  });
+}
+
+function renderItinerary(){
+  renderItinDayFilter();
+  renderHotels();
+  if(itinView === 'day'){ renderItinDayView(); }
+  else if(itinView === 'week'){ renderItinWeekView(); }
+}
+
 function renderAll(){
   renderDayFilter();
   renderDateSelect();
+  renderCategorySelects();
   renderQuickItems();
   renderPeopleList();
   renderRates();
   renderExpenses();
   renderPretrip();
+  renderItinerary();
   renderSettlement();
   renderHeader();
 }

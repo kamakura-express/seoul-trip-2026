@@ -97,28 +97,66 @@
   .itin-name{ font-size:14px; font-weight:600; }
   .itin-note{ font-size:11.5px; color:var(--muted); margin-top:2px; }
   .itin-actions{ display:flex; gap:4px; flex-shrink:0; }
-
-  .timeline{ position:relative; padding-left:22px; }
-  .timeline::before{ content:''; position:absolute; left:8px; top:6px; bottom:6px; width:2px; background:var(--line); }
-  .timeline-item{ position:relative; margin-bottom:16px; }
-  .timeline-item:last-child{ margin-bottom:0; }
-  .timeline-dot{
-    position:absolute; left:-19px; top:5px; width:11px; height:11px; border-radius:50%;
-    background: var(--teal); border:2px solid var(--card); box-shadow: 0 0 0 1px var(--teal);
-  }
-  .timeline-time{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:13px; color:var(--teal); margin-bottom:6px; }
-  .timeline-card{ background: var(--bg); border:1px solid var(--line); border-radius:10px; padding:11px 14px; }
   .itin-top-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+
+  .hour-grid{ border-top:1px solid var(--line); }
+  .hour-row{ display:flex; gap:12px; min-height:40px; padding:8px 0; border-bottom:1px dotted var(--line); }
+  .hour-row-empty{ min-height:26px; padding:5px 0; }
+  .hour-label{
+    flex:0 0 50px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--muted);
+    padding-top:3px;
+  }
+  .hour-content{ flex:1; display:flex; flex-direction:column; gap:8px; }
+  .hour-card{ background: var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 13px; }
+  .hour-card-time{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:11px; color:var(--teal); }
+
+  .hour-card{ cursor:pointer; }
+  .itin-note-clip{
+    font-size:11.5px; color:var(--muted); margin-top:2px;
+    display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;
+  }
+
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background:rgba(27,44,77,0.45);
+    z-index:100; align-items:flex-end; justify-content:center; padding:0;
+  }
+  .modal-overlay.show{ display:flex; }
+  .modal-box{
+    background: var(--card); width:100%; max-width:720px; border-radius:18px 18px 0 0;
+    padding:20px 20px 24px; max-height:80vh; overflow-y:auto;
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.25);
+  }
+  @media (min-width: 760px){
+    .modal-overlay{ align-items:center; }
+    .modal-box{ border-radius:16px; max-height:70vh; }
+  }
+  .modal-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:14px; }
+  .modal-day{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--teal); font-weight:600; }
+  .modal-name{ font-family:'Noto Serif HK',serif; font-size:19px; font-weight:700; color:var(--ink); margin-top:2px; }
+  .modal-close{ background:none; border:none; font-size:22px; color:var(--muted); padding:2px 6px; line-height:1; }
+  .modal-note{
+    white-space:pre-wrap; font-size:14px; color:var(--ink); line-height:1.6;
+    background: var(--bg); border-radius:10px; padding:14px 16px; min-height:40px;
+  }
+  .modal-actions{ margin-top:16px; }
 
   .week-grid{ display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; -webkit-overflow-scrolling:touch; }
   .week-day-col{
-    flex: 0 0 200px; background: var(--card); border:1px solid var(--line); border-radius:12px;
-    padding:14px 16px;
+    flex: 0 0 168px; background: var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:12px 12px;
   }
-  .week-day-title{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px; color:var(--pink); margin-bottom:8px; }
-  .week-itin-row{ display:flex; gap:8px; font-size:12.5px; padding:6px 0; border-bottom:1px dotted var(--line); align-items:flex-start; }
-  .week-itin-row:last-child{ border-bottom:none; }
-  .week-itin-row .t{ font-family:'IBM Plex Mono',monospace; color:var(--teal); min-width:40px; flex-shrink:0; }
+  .week-day-title{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px; color:var(--pink); margin-bottom:6px; }
+  .week-hotel-tag{ font-size:11px; color:#a35b00; margin-bottom:6px; }
+
+  .hour-row-mini{ display:flex; gap:6px; padding:4px 0; border-bottom:1px dotted var(--line); min-height:20px; }
+  .hour-row-mini-empty{ min-height:14px; padding:2px 0; }
+  .hour-label-mini{ flex:0 0 26px; font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--muted); padding-top:2px; }
+  .hour-content-mini{ flex:1; display:flex; flex-direction:column; gap:3px; }
+  .hour-card-mini{
+    background: var(--bg); border:1px solid var(--line); border-radius:6px; padding:3px 7px;
+    font-size:11px; color:var(--ink); cursor:pointer; line-height:1.35;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
 
   .hotel-banner{
     display:flex; align-items:center; gap:8px; background: var(--gold-l); border:1px dashed var(--gold);
@@ -250,9 +288,9 @@
 
     .settle-line{ font-size:12.5px; }
 
-    .week-day-col{ flex-basis: 168px; padding:12px 13px; }
+    .week-day-col{ flex-basis: 148px; padding:10px 10px; }
     .week-day-title{ font-size:12px; }
-    .week-itin-row{ font-size:11.5px; }
+    .hour-card-mini{ font-size:10.5px; }
   }
   @media (max-width: 360px){
     .row3{ grid-template-columns: 1fr; }
@@ -439,8 +477,12 @@
         <h3>新增一項行程</h3>
         <div class="row2">
           <div>
-            <label>時間</label>
-            <input type="time" id="it-time">
+            <label>時間（24小時制）</label>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <select id="it-hour" style="flex:1;"></select>
+              <span style="color:var(--muted); font-weight:600;">:</span>
+              <select id="it-minute" style="flex:1;"></select>
+            </div>
           </div>
           <div>
             <label>項目</label>
@@ -448,7 +490,7 @@
           </div>
         </div>
         <label>備註（選填）</label>
-        <input id="it-note" placeholder="例如：地址、注意事項">
+        <textarea id="it-note" rows="2" placeholder="例如：地址、shopping list（可以打多行）" style="width:100%; padding:9px 10px; border-radius:8px; border:1px solid var(--line); background:#fbfdfe; font-family:'Inter',sans-serif; font-size:14px; color:var(--ink); resize:vertical;"></textarea>
         <button class="btn-main" id="add-itin" style="background:var(--teal);">加入行程</button>
         <button type="button" class="btn-ghost" id="cancel-edit-it" style="display:none; margin-top:8px; width:100%; text-align:center;">取消編輯</button>
       </div>
@@ -514,6 +556,22 @@
 
   <div class="save-status" id="saveStatus">&nbsp;</div>
   <div class="foot-note">資料同步緊你自己嘅 Firebase（seoul-trip-2026），唔經 Claude；改動幾乎即時傳晒俾用緊同一個檔案嘅人</div>
+</div>
+
+<div class="modal-overlay" id="itin-modal-overlay">
+  <div class="modal-box">
+    <div class="modal-top">
+      <div>
+        <div class="modal-day" id="itin-modal-day"></div>
+        <div class="modal-name" id="itin-modal-name"></div>
+      </div>
+      <button class="modal-close" id="itin-modal-close" aria-label="關閉">&times;</button>
+    </div>
+    <div class="modal-note" id="itin-modal-note"></div>
+    <div class="modal-actions">
+      <button class="btn-main" id="itin-modal-edit" style="background:var(--teal); margin-top:0;">編輯呢項</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1227,6 +1285,45 @@ function renderHotelBanner(){
   el.innerHTML = h ? '<div class="hotel-banner">\u{1F3E8} <span>今晚住：<b>' + escapeHtml(h.name) + '</b></span></div>' : '';
 }
 
+// ---------- Itinerary detail modal ----------
+let modalDay = null;
+let modalId = null;
+
+function openItinDetail(day, id){
+  const item = (state.itinerary[day] || []).find(i => i.id === id);
+  if(!item) return;
+  modalDay = day; modalId = id;
+  document.getElementById('itin-modal-day').textContent = day + (item.time ? ' · ' + item.time : '');
+  document.getElementById('itin-modal-name').textContent = item.name;
+  document.getElementById('itin-modal-note').textContent = item.note || '（未有備註）';
+  document.getElementById('itin-modal-overlay').classList.add('show');
+}
+
+function closeItinDetail(){
+  document.getElementById('itin-modal-overlay').classList.remove('show');
+  modalDay = null; modalId = null;
+}
+
+document.getElementById('itin-modal-close').addEventListener('click', closeItinDetail);
+document.getElementById('itin-modal-overlay').addEventListener('click', (e) => {
+  if(e.target.id === 'itin-modal-overlay') closeItinDetail();
+});
+document.getElementById('itin-modal-edit').addEventListener('click', () => {
+  if(modalDay === null || modalId === null) return;
+  const day = modalDay, id = modalId;
+  closeItinDetail();
+  itinSelectedDay = day;
+  if(itinView !== 'day'){
+    itinView = 'day';
+    document.querySelectorAll('#itin-view-toggle .view-chip').forEach(c => c.classList.toggle('active', c.dataset.view === 'day'));
+    document.getElementById('itin-day-view').style.display = 'block';
+    document.getElementById('itin-week-view').style.display = 'none';
+    document.getElementById('itin-hotel-view').style.display = 'none';
+    renderItinerary();
+  }
+  startEditItin(day, id);
+});
+
 // ---------- Itinerary ----------
 document.querySelectorAll('#itin-view-toggle .view-chip').forEach(chip => {
   chip.addEventListener('click', () => {
@@ -1258,8 +1355,28 @@ function sortedItinFor(day){
   return list;
 }
 
+function populateItinTimeSelects(){
+  const hourSel = document.getElementById('it-hour');
+  const minSel = document.getElementById('it-minute');
+  if(hourSel.options.length === 0){
+    hourSel.innerHTML = '<option value="">--</option>' +
+      Array.from({length:24}, (_, h) => {
+        const v = String(h).padStart(2,'0');
+        return '<option value="' + v + '">' + v + '</option>';
+      }).join('');
+  }
+  if(minSel.options.length === 0){
+    minSel.innerHTML = '<option value="">--</option>' +
+      ['00','05','10','15','20','25','30','35','40','45','50','55'].map(m =>
+        '<option value="' + m + '">' + m + '</option>'
+      ).join('');
+  }
+}
+
 document.getElementById('add-itin').addEventListener('click', () => {
-  const time = document.getElementById('it-time').value;
+  const hour = document.getElementById('it-hour').value;
+  const minute = document.getElementById('it-minute').value;
+  const time = hour ? (hour + ':' + (minute || '00')) : '';
   const name = document.getElementById('it-name').value.trim();
   const note = document.getElementById('it-note').value.trim();
   if(!name) return;
@@ -1274,7 +1391,8 @@ document.getElementById('add-itin').addEventListener('click', () => {
     state.itinerary[itinSelectedDay].push({ id: Date.now(), time, name, note });
   }
 
-  document.getElementById('it-time').value = '';
+  document.getElementById('it-hour').value = '';
+  document.getElementById('it-minute').value = '';
   document.getElementById('it-name').value = '';
   document.getElementById('it-note').value = '';
   document.getElementById('add-itin').textContent = '加入行程';
@@ -1287,7 +1405,8 @@ document.getElementById('add-itin').addEventListener('click', () => {
 document.getElementById('cancel-edit-it').addEventListener('click', cancelEditItin);
 function cancelEditItin(){
   editingItinId = null;
-  document.getElementById('it-time').value = '';
+  document.getElementById('it-hour').value = '';
+  document.getElementById('it-minute').value = '';
   document.getElementById('it-name').value = '';
   document.getElementById('it-note').value = '';
   document.getElementById('add-itin').textContent = '加入行程';
@@ -1299,7 +1418,14 @@ function startEditItin(day, id){
   if(!item) return;
   itinSelectedDay = day;
   editingItinId = id;
-  document.getElementById('it-time').value = item.time || '';
+  if(item.time && item.time.includes(':')){
+    const [h, m] = item.time.split(':');
+    document.getElementById('it-hour').value = h;
+    document.getElementById('it-minute').value = m;
+  } else {
+    document.getElementById('it-hour').value = '';
+    document.getElementById('it-minute').value = '';
+  }
   document.getElementById('it-name').value = item.name;
   document.getElementById('it-note').value = item.note || '';
   document.getElementById('add-itin').textContent = '更新呢項';
@@ -1318,25 +1444,51 @@ function renderItinDayView(){
     el.innerHTML = '<div class="empty">呢日未安排行程</div>';
     return;
   }
-  el.innerHTML = '<div class="timeline"></div>';
-  const timeline = el.querySelector('.timeline');
-  list.forEach(item => {
-    const row = document.createElement('div');
-    row.className = 'timeline-item';
-    row.innerHTML =
-      '<div class="timeline-dot"></div>' +
-      '<div class="timeline-time">' + (item.time ? escapeHtml(item.time) : '--:--') + '</div>' +
-      '<div class="timeline-card">' +
-        '<div class="itin-top-row">' +
-          '<div class="itin-name">' + escapeHtml(item.name) + '</div>' +
-          '<div class="itin-actions">' +
-            '<button class="edit-btn" data-id="' + item.id + '" aria-label="編輯">\u270E</button>' +
-            '<button class="del" data-id="' + item.id + '" aria-label="刪除">\u00D7</button>' +
-          '</div>' +
+
+  const untimed = list.filter(i => !i.time);
+  const timed = list.filter(i => i.time);
+  const byHour = {};
+  timed.forEach(item => {
+    const h = item.time.split(':')[0];
+    if(!byHour[h]) byHour[h] = [];
+    byHour[h].push(item);
+  });
+
+  function buildCard(item){
+    return '<div class="hour-card" data-open-id="' + item.id + '">' +
+      '<div class="itin-top-row">' +
+        '<div class="itin-name">' + escapeHtml(item.name) + (item.time ? ' <span class="hour-card-time">' + escapeHtml(item.time) + '</span>' : '') + '</div>' +
+        '<div class="itin-actions">' +
+          '<button class="edit-btn" data-id="' + item.id + '" aria-label="編輯">\u270E</button>' +
+          '<button class="del" data-id="' + item.id + '" aria-label="刪除">\u00D7</button>' +
         '</div>' +
-        (item.note ? '<div class="itin-note">' + escapeHtml(item.note) + '</div>' : '') +
-      '</div>';
-    timeline.appendChild(row);
+      '</div>' +
+      (item.note ? '<div class="itin-note-clip">' + escapeHtml(item.note) + '</div>' : '') +
+    '</div>';
+  }
+
+  let html = '';
+  if(untimed.length > 0){
+    html += '<div class="hour-row"><div class="hour-label">未定</div><div class="hour-content">' +
+      untimed.map(buildCard).join('') + '</div></div>';
+  }
+  html += '<div class="hour-grid">';
+  for(let h = 0; h < 24; h++){
+    const hh = String(h).padStart(2, '0');
+    const items = byHour[hh];
+    html += '<div class="hour-row' + (items ? '' : ' hour-row-empty') + '">' +
+      '<div class="hour-label">' + hh + ':00</div>' +
+      '<div class="hour-content">' + (items ? items.map(buildCard).join('') : '') + '</div>' +
+    '</div>';
+  }
+  html += '</div>';
+
+  el.innerHTML = html;
+  el.querySelectorAll('.hour-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if(e.target.closest('.edit-btn') || e.target.closest('.del')) return;
+      openItinDetail(itinSelectedDay, Number(card.dataset.openId));
+    });
   });
   el.querySelectorAll('.edit-btn').forEach(btn => {
     btn.addEventListener('click', () => startEditItin(itinSelectedDay, Number(btn.dataset.id)));
@@ -1355,20 +1507,48 @@ function renderItinWeekView(){
   const el = document.getElementById('itin-week-view');
   el.innerHTML = '<div class="week-grid"></div>';
   const grid = el.querySelector('.week-grid');
+
   TRIP_DAYS.forEach(d => {
     const list = sortedItinFor(d);
     const h = hotelForDay(d);
+    const untimed = list.filter(i => !i.time);
+    const timed = list.filter(i => i.time);
+    const byHour = {};
+    timed.forEach(item => {
+      const hh = item.time.split(':')[0];
+      if(!byHour[hh]) byHour[hh] = [];
+      byHour[hh].push(item);
+    });
+
+    function buildMiniCard(item){
+      return '<div class="hour-card-mini" data-open-day="' + d + '" data-open-id="' + item.id + '">' +
+        escapeHtml(item.name) +
+      '</div>';
+    }
+
+    const hotelTag = h ? '<div class="week-hotel-tag">\u{1F3E8} ' + escapeHtml(h.name) + '</div>' : '';
+
+    let bodyHtml = '';
+    if(untimed.length > 0){
+      bodyHtml += '<div class="hour-row-mini"><div class="hour-label-mini">未定</div><div class="hour-content-mini">' +
+        untimed.map(buildMiniCard).join('') + '</div></div>';
+    }
+    for(let hIdx = 0; hIdx < 24; hIdx++){
+      const hh = String(hIdx).padStart(2, '0');
+      const items = byHour[hh];
+      bodyHtml += '<div class="hour-row-mini' + (items ? '' : ' hour-row-mini-empty') + '"><div class="hour-label-mini">' + hh + '</div><div class="hour-content-mini">' +
+        (items ? items.map(buildMiniCard).join('') : '') + '</div></div>';
+    }
     const col = document.createElement('div');
     col.className = 'week-day-col';
-    let rows = '<div class="empty" style="padding:8px 0; font-size:12px;">未安排</div>';
-    if(list.length > 0){
-      rows = list.map(item =>
-        '<div class="week-itin-row"><span class="t">' + (item.time ? escapeHtml(item.time) : '--:--') + '</span><span>' + escapeHtml(item.name) + (item.note ? '<br><span style="color:var(--muted); font-size:11px;">' + escapeHtml(item.note) + '</span>' : '') + '</span></div>'
-      ).join('');
-    }
-    const hotelTag = h ? '<div class="week-itin-row" style="border-bottom:none; color:#a35b00;"><span class="t">\u{1F3E8}</span><span>' + escapeHtml(h.name) + '</span></div>' : '';
-    col.innerHTML = '<div class="week-day-title">' + d + '</div>' + hotelTag + rows;
+    col.innerHTML = '<div class="week-day-title">' + d + '</div>' + hotelTag + bodyHtml;
     grid.appendChild(col);
+  });
+
+  grid.querySelectorAll('.hour-card-mini').forEach(card => {
+    card.addEventListener('click', () => {
+      openItinDetail(card.dataset.openDay, Number(card.dataset.openId));
+    });
   });
 }
 
@@ -1393,6 +1573,7 @@ function renderAll(){
   renderHeader();
 }
 
+populateItinTimeSelects();
 loadState();
 </script>
 </body>

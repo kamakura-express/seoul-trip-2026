@@ -646,6 +646,29 @@ const QUICK_ITEMS_PRE = [
   { name:'簽證 / ETA', category:'簽證' }
 ];
 
+// Firebase Realtime Database keys can't contain "/", but our day labels
+// (e.g. "09/11") are used as object keys in state.itinerary. Convert at the
+// read/write boundary only, so the rest of the app keeps using "09/11" style.
+function toFirebasePayload(s){
+  const payload = JSON.parse(JSON.stringify(s));
+  const safeItin = {};
+  Object.keys(payload.itinerary || {}).forEach(day => {
+    safeItin[day.replace(/\//g, '-')] = payload.itinerary[day];
+  });
+  payload.itinerary = safeItin;
+  return payload;
+}
+function fromFirebasePayload(val){
+  if(val && val.itinerary){
+    const restored = {};
+    Object.keys(val.itinerary).forEach(k => {
+      restored[k.replace(/-/g, '/')] = val.itinerary[k];
+    });
+    val.itinerary = restored;
+  }
+  return val;
+}
+
 function loadState(){
   const statusEl = document.getElementById('saveStatus');
   statusEl.textContent = '連接緊 Firebase…';
@@ -653,7 +676,7 @@ function loadState(){
   // made by anyone (including other devices), keeping everyone in sync automatically.
   dataRef.on('value', (snapshot) => {
     if(suppressNextRemoteApply){ suppressNextRemoteApply = false; return; }
-    const val = snapshot.val();
+    const val = fromFirebasePayload(snapshot.val());
     if(val){
       state = Object.assign({ people:['我'], expenses:[], rates:{KRW:0.055,HKD:1,RMB:1.08}, itinerary:{}, hotels:[] }, val);
     }
@@ -672,7 +695,7 @@ function saveState(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     suppressNextRemoteApply = true;
-    dataRef.set(state)
+    dataRef.set(toFirebasePayload(state))
       .then(() => {
         statusEl.textContent = '已同步';
         setTimeout(()=>{ statusEl.textContent = '\u00A0'; }, 1500);
